@@ -7,8 +7,10 @@ import (
 )
 
 func TestPrepare(t *testing.T) {
-	image2tiles := image2tiles.New()
-	if err := image2tiles.Prepare(); err != nil {
+	converter := image2tiles.NewConverter()
+	imageFilename := "testdata/earth_5568 × 3712.jpg"
+
+	if err := converter.Prepare(imageFilename); err != nil {
 		t.Fatal("prepare", err)
 	}
 }
