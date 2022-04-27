@@ -64,26 +64,27 @@ package main
 
 import (
 	"fmt"
-	
 	"github.com/lvisei/image2tiles"
 )
 
 func main() {
   converter := image2tiles.NewConverter()
+
   if err := converter.Prepare("image.png", "#ffffff"); err != nil {
-  	fmt.Println(err)
+      fmt.Println(err)
   }
-  
+
   if img, err := converter.Tile(0, [2]int{256, 256}, [2]int{0, 0}, true); err!=nil {
   	fmt.Println(err)
   }else {
   	image2tiles.SaveJPG("out/0-0-0.jpg", img, 75)
   }
-  
+
   if _, err := converter.Subdivide(0, [2]int{256, 256}, [2]int{0, 0}, "tile-%d-%d-%d.jpg", "out"); err != nil {
   	fmt.Println(err)
   }
-	fmt.Println(converter.MaxZoom, converter.TileSize)
+
+  fmt.Println(converter.MaxZoom, converter.TileSize)
 }
 
 ```
