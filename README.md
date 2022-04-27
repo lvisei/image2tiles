@@ -12,7 +12,7 @@ You can download from GitHub [releases](https://github.com/lvisei/image2tiles/re
 
 For example download file:
 
-- windows: `image2tiles_0.0.1_windows_x86_64.exe`
+- windows: `image2tiles_0.0.1_windows_x86_64.zip`
 - maxOS x86: `image2tiles_0.0.1_darwin_x86_64.tar.gz`
 - maxOS M1: `image2tiles_0.0.1_darwin_arm64.tar.gz`
 
@@ -26,7 +26,7 @@ cd cmd/image2tiles && go install
 ### Usage
 
 ```bash
-image2tiles -f image.png -s 256
+image2tiles -f image.png
 ```
 
 Options flags:
@@ -46,7 +46,7 @@ Options:
   -s int
         The tile height/width (default 256)
   -t string
-        Template filename pattern (default "-%d-%d-%d")
+        Template filename pattern (default "%d-%d-%d.jpg")
 ```
 
 ## Library
@@ -63,11 +63,27 @@ go get github.com/lvisei/image2tiles
 package main
 
 import (
-  "github.com/lvisei/image2tiles"
+	"fmt"
+	
+	"github.com/lvisei/image2tiles"
 )
 
 func main() {
   converter := image2tiles.NewConverter()
+  if err := converter.Prepare("image.png", "#ffffff"); err != nil {
+  	fmt.Println(err)
+  }
+  
+  if img, err := converter.Tile(0, [2]int{256, 256}, [2]int{0, 0}, true); err!=nil {
+  	fmt.Println(err)
+  }else {
+  	image2tiles.SaveJPG("out/0-0-0.jpg", img, 75)
+  }
+  
+  if _, err := converter.Subdivide(0, [2]int{256, 256}, [2]int{0, 0}, "tile-%d-%d-%d.jpg", "out"); err != nil {
+  	fmt.Println(err)
+  }
+	fmt.Println(converter.MaxZoom, converter.TileSize)
 }
 
 ```
