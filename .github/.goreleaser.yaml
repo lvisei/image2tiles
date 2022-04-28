@@ -20,7 +20,6 @@ builds:
       - -X github.com/lvisei/image2tiles/cli.version={{.Version}}
       - -X github.com/lvisei/image2tiles/cli.commit={{.ShortCommit}}
       - -X github.com/lvisei/image2tiles/cli.date={{.Date}}
-      - -X main.builtBy=goreleaser
 
 archives:
   - replacements:
