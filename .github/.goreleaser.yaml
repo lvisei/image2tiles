@@ -1,0 +1,62 @@
+project_name: image2tiles
+
+env:
+  - GO111MODULE=on
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: ./cmd/image2tiles
+    binary: image2tiles
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    goos:
+    - linux
+    - darwin
+    - windows
+    ldflags:
+      - -s -w
+      - -X github.com/lvisei/image2tiles/cli.version={{.Version}}
+      - -X github.com/lvisei/image2tiles/cli.commit={{.ShortCommit}}
+      - -X github.com/lvisei/image2tiles/cli.date={{.Date}}
+      - -X main.builtBy=goreleaser
+
+archives:
+  - replacements:
+      darwin: darwin
+      linux: linux
+      windows: windows
+      amd64: x86_64
+    format_overrides:
+    - goos: windows
+      format: zip
+    files:
+      - LICENSE
+      - README.md
+
+release:
+  prerelease: auto
+  footer: |
+    **Full Changelog**: https://github.com/lvisei/image2tiles/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+    - '^chore'
+    - Merge pull request
+    - Merge remote-tracking branch
+    - Merge branch
+  groups:
+    - title: 'New Features'
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 10
+    - title: Other
+      order: 999

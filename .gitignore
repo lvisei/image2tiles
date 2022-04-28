@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# IDE configs
+.idea
+.vscode
+
+out
+image2tiles
+!image2tiles
+
