@@ -42,11 +42,9 @@ Options:
   -f string
         Image filename to be convert
   -o string
-        Output directory (default "out")
+        Output file pattern (default "out/%d/%d-%d.jpg")
   -s int
-        The tile height/width (default 256)
-  -t string
-        Template filename pattern (default "%d-%d-%d.jpg")
+        The tile height/width (default 512)
 ```
 
 ## Library
@@ -58,6 +56,8 @@ go get github.com/lvisei/image2tiles
 ```
 
 ### Usage
+
+Image into small single tiles
 
 ```go
 package main
@@ -79,8 +79,28 @@ func main() {
   }else {
   	image2tiles.SaveJPG("out/0-0-0.jpg", img, 75)
   }
+}
 
-  if _, err := converter.Subdivide(0, [2]int{256, 256}, [2]int{0, 0}, "tile-%d-%d-%d.jpg", "out"); err != nil {
+```
+
+Image into small multiple tiles
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/lvisei/image2tiles"
+)
+
+func main() {
+  converter := image2tiles.NewConverter()
+
+  if err := converter.Prepare("image.png", "#ffffff"); err != nil {
+      fmt.Println(err)
+  }
+
+  if err := converter.Execute([2]int{256, 256}, "out/level-%d/%d-%d.jpg"); err != nil {
   	fmt.Println(err)
   }
 
@@ -88,6 +108,8 @@ func main() {
 }
 
 ```
+
+
 
 ## LICENSE
 

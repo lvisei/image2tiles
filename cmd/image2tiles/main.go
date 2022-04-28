@@ -17,11 +17,10 @@ var (
 	//lint:ignore U1000 embedded by goreleaser
 	date = "?"
 
-	imageFilename   = flag.String("f", "", "image file name")
-	tileSize        = flag.Int("s", 256, "the tile height/width")
-	template        = flag.String("t", "%d-%d-%d.jpg", "template filename pattern")
-	outputDirectory = flag.String("o", "out", "output directory")
-	backgroundColor = flag.String("b", "#FFF", "the background color to be used for the tiles")
+	imageFilename   = flag.String("f", "", "Image file name")
+	tileSize        = flag.Int("s", 512, "The tile height/width")
+	output          = flag.String("o", "out/%d/%d-%d.jpg", "Output file pattern")
+	backgroundColor = flag.String("b", "#FFF", "The background color to be used for the tiles")
 )
 
 func main() {
@@ -32,7 +31,7 @@ func main() {
 		if err := converter.Prepare(*imageFilename, *backgroundColor); err != nil {
 			fmt.Println(err)
 		}
-		if _, err := converter.Subdivide(0, [2]int{*tileSize, *tileSize}, [2]int{0, 0}, *template, *outputDirectory); err != nil {
+		if err := converter.Execute([2]int{*tileSize, *tileSize}, *output); err != nil {
 			fmt.Println(err)
 		}
 	} else {
@@ -54,8 +53,8 @@ func parse() error {
 		return fmt.Errorf("image file: %v\n", err)
 	}
 
-	if err := os.MkdirAll(*outputDirectory, os.ModePerm); err != nil {
-		return fmt.Errorf("create output directory: %v\n", err)
+	if *output == "" {
+		return errors.New("output file pattern should not be empty")
 	}
 
 	return nil
