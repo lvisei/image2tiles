@@ -35,7 +35,7 @@ func main() {
 			fmt.Println(err)
 		}
 	} else {
-		fmt.Print(err)
+		fmt.Println(err)
 		usage()
 	}
 
