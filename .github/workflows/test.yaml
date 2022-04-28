@@ -24,10 +24,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Build
-      run: make build
+      run: go mod tidy && make build
     - uses: dominikh/staticcheck-action@v1.2.0
       name: staticcheck
       with:
-        install-go: true
+        install-go: false
     - name: Test
       run: make test
