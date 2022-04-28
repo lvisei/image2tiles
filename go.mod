@@ -1,6 +1,6 @@
 module github.com/lvisei/image2tiles
 
-go 1.18
+go 1.17
 
 require (
 	github.com/disintegration/imaging v1.6.2
