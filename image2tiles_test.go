@@ -35,7 +35,7 @@ func TestExecute(t *testing.T) {
 	if err := converter.Prepare(imageFilename, "#fff"); err != nil {
 		t.Fatal("prepare", err)
 	}
-	if err := converter.Execute([2]int{512, 512}, "out/%d/%d-%d.jpg"); err != nil {
+	if err := converter.Execute([2]int{512, 512}, true, 75, "out/%d/%d-%d.jpg"); err != nil {
 		t.Fatal("subdivide", err)
 	}
 }

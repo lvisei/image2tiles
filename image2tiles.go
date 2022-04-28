@@ -13,8 +13,6 @@ import (
 
 var (
 	resampleFilter = imaging.Lanczos
-	imageQuality   = 75
-	efficient      = true
 )
 
 type Converter struct {
@@ -104,8 +102,8 @@ func (converter *Converter) Tile(level int, size [2]int, quadrant [2]int, effici
 	return zoomed, nil
 }
 
-// Subdivide Recursively subdivide a large image into small tiles
-func (converter *Converter) Subdivide(level int, size [2]int, quadrant [2]int, output string) (image.Image, error) {
+// subdivide Recursively subdivide a large image into small tiles
+func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, efficient bool, imageQuality int, output string) (image.Image, error) {
 	if converter.ImageWidth <= size[0]*int(math.Pow(2, float64(level))) {
 		outImg, err := converter.Tile(level, size, quadrant, efficient)
 		if err != nil {
@@ -133,26 +131,26 @@ func (converter *Converter) Subdivide(level int, size [2]int, quadrant [2]int, o
 
 	outImg := imaging.New(size[0]*2, size[1]*2, color.NRGBA{})
 
-	if img, err := converter.Subdivide(level+1, size, [2]int{quadrant[0]*2 + 0, quadrant[1]*2 + 0}, output); err != nil {
+	if img, err := converter.subdivide(level+1, size, [2]int{quadrant[0]*2 + 0, quadrant[1]*2 + 0}, efficient, imageQuality, output); err != nil {
 		return nil, err
 	} else {
 		outImg = imaging.Paste(outImg, img, image.Pt(0, 0))
 
 	}
 
-	if img, err := converter.Subdivide(level+1, size, [2]int{quadrant[0]*2 + 0, quadrant[1]*2 + 1}, output); err != nil {
+	if img, err := converter.subdivide(level+1, size, [2]int{quadrant[0]*2 + 0, quadrant[1]*2 + 1}, efficient, imageQuality, output); err != nil {
 		return nil, err
 	} else {
 		outImg = imaging.Paste(outImg, img, image.Pt(0, size[1]))
 	}
 
-	if img, err := converter.Subdivide(level+1, size, [2]int{quadrant[0]*2 + 1, quadrant[1]*2 + 0}, output); err != nil {
+	if img, err := converter.subdivide(level+1, size, [2]int{quadrant[0]*2 + 1, quadrant[1]*2 + 0}, efficient, imageQuality, output); err != nil {
 		return nil, err
 	} else {
 		outImg = imaging.Paste(outImg, img, image.Pt(size[0], 0))
 	}
 
-	if img, err := converter.Subdivide(level+1, size, [2]int{quadrant[0]*2 + 1, quadrant[1]*2 + 1}, output); err != nil {
+	if img, err := converter.subdivide(level+1, size, [2]int{quadrant[0]*2 + 1, quadrant[1]*2 + 1}, efficient, imageQuality, output); err != nil {
 		return nil, err
 	} else {
 		outImg = imaging.Paste(outImg, img, image.Pt(size[0], size[1]))
@@ -172,8 +170,8 @@ func (converter *Converter) Subdivide(level int, size [2]int, quadrant [2]int, o
 }
 
 // Execute a large image into small tiles
-func (converter *Converter) Execute(size [2]int, output string) error {
-	_, err := converter.Subdivide(0, size, [2]int{0, 0}, output)
+func (converter *Converter) Execute(size [2]int, efficient bool, imageQuality int, output string) error {
+	_, err := converter.subdivide(0, size, [2]int{0, 0}, efficient, imageQuality, output)
 	if err != nil {
 		return err
 	}

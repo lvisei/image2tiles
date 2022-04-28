@@ -31,7 +31,7 @@ func main() {
 		if err := converter.Prepare(*imageFilename, *backgroundColor); err != nil {
 			fmt.Println(err)
 		}
-		if err := converter.Execute([2]int{*tileSize, *tileSize}, *output); err != nil {
+		if err := converter.Execute([2]int{*tileSize, *tileSize}, true, 75, *output); err != nil {
 			fmt.Println(err)
 		}
 	} else {

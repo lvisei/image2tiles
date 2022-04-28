@@ -12,9 +12,9 @@ You can download from GitHub [releases](https://github.com/lvisei/image2tiles/re
 
 For example download file:
 
-- windows: `image2tiles_0.0.1_windows_x86_64.zip`
-- maxOS x86: `image2tiles_0.0.1_darwin_x86_64.tar.gz`
-- maxOS M1: `image2tiles_0.0.1_darwin_arm64.tar.gz`
+- windows: `**_windows_x86_64.zip`
+- maxOS x86: `**_darwin_x86_64.tar.gz`
+- maxOS M1: `**_darwin_arm64.tar.gz`
 
 #### Build from source
 
@@ -26,7 +26,7 @@ cd cmd/image2tiles && go install
 ### Usage
 
 ```bash
-image2tiles -f image.png
+image2tiles -f image.png -s 512
 ```
 
 Options flags:
@@ -100,7 +100,7 @@ func main() {
       fmt.Println(err)
   }
 
-  if err := converter.Execute([2]int{256, 256}, "out/level-%d/%d-%d.jpg"); err != nil {
+  if err := converter.Execute([2]int{256, 256}, true, 75, "out/level-%d/%d-%d.jpg"); err != nil {
   	fmt.Println(err)
   }
 
