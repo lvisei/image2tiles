@@ -48,9 +48,9 @@ func parse() error {
 
 	if _, err := os.Stat(*imageFilename); err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("image file %s is not exist\n", *imageFilename)
+			return fmt.Errorf("image file %s is not exist", *imageFilename)
 		}
-		return fmt.Errorf("image file: %v\n", err)
+		return fmt.Errorf("image file: %v", err)
 	}
 
 	if *output == "" {

@@ -112,7 +112,7 @@ func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, e
 
 		filePath := fmt.Sprintf(output, level, quadrant[0], quadrant[1])
 		if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
-			return nil, fmt.Errorf("create output directory: %v\n", err)
+			return nil, fmt.Errorf("create output directory: %v", err)
 		}
 		if err := SaveJPG(filePath, outImg, imageQuality); err != nil {
 			return nil, err
@@ -160,7 +160,7 @@ func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, e
 
 	filePath := fmt.Sprintf(output, level, quadrant[0], quadrant[1])
 	if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create output directory: %v\n", err)
+		return nil, fmt.Errorf("create output directory: %v", err)
 	}
 	if err := SaveJPG(filePath, outImg, imageQuality); err != nil {
 		return nil, err
