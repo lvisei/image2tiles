@@ -19,7 +19,7 @@ func TestTile(t *testing.T) {
 	converter := image2tiles.NewConverter()
 	imageFilename := "testdata/earth_5568 × 3712.jpg"
 
-	if err := converter.Prepare(imageFilename, "#fff"); err != nil {
+	if err := converter.Prepare(imageFilename, "#00000000"); err != nil {
 		t.Fatal("prepare", err)
 	}
 
@@ -32,10 +32,10 @@ func TestExecute(t *testing.T) {
 	converter := image2tiles.NewConverter()
 	imageFilename := "testdata/earth_5568 × 3712.jpg"
 
-	if err := converter.Prepare(imageFilename, "#fff"); err != nil {
+	if err := converter.Prepare(imageFilename, "#00000000"); err != nil {
 		t.Fatal("prepare", err)
 	}
-	if err := converter.Execute([2]int{512, 512}, true, 75, "out/%d/%d-%d.jpg"); err != nil {
+	if err := converter.Execute([2]int{512, 512}, true, 75, "docs/tiles/%d/%d-%d.png"); err != nil {
 		t.Fatal("subdivide", err)
 	}
 }

@@ -1,6 +1,12 @@
 # image2tiles
 
+[![GoDoc](https://godoc.org/github.com/lvisei/image2tiles?status.svg)](https://pkg.go.dev/github.com/lvisei/image2tiles)
+[![Go Report Card](https://goreportcard.com/badge/github.com/lvisei/image2tiles)](https://goreportcard.com/report/github.com/lvisei/image2tiles)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 image2tiles is a tool to cut large image into square tiles, to be used for a interactive tiled viewer.
+
+There are many high-performant viewing of large image available，but cropping and slicing images may be trouble. image2tiles support custom tile size and creates all tiles to be used by map tool like [leaflet](https://lvisei.github.io/image2tiles/leaflet.html), [openlayers](https://lvisei.github.io/image2tiles/openlayers.html) or Other.
 
 ## Command Line
 
@@ -38,7 +44,7 @@ Usage: image2tiles -f <filename> [-s] [-t] [-b] [-o]
 
 Options:
   -b string
-        The background color to be used for the tiles (default "#FFF")
+        The background color to be used for the tiles (default "#ffffff00")
   -f string
         Image filename to be convert
   -o string
@@ -57,7 +63,7 @@ go get github.com/lvisei/image2tiles
 
 ### Usage
 
-Image into small single tiles
+Image into small single tile
 
 ```go
 package main
@@ -70,7 +76,7 @@ import (
 func main() {
   converter := image2tiles.NewConverter()
 
-  if err := converter.Prepare("image.png", "#ffffff"); err != nil {
+  if err := converter.Prepare("image.png", "#fff"); err != nil {
       fmt.Println(err)
   }
 
@@ -83,7 +89,7 @@ func main() {
 
 ```
 
-Image into small multiple tiles
+Image into multiple small tiles
 
 ```go
 package main
@@ -96,7 +102,7 @@ import (
 func main() {
   converter := image2tiles.NewConverter()
 
-  if err := converter.Prepare("image.png", "#ffffff"); err != nil {
+  if err := converter.Prepare("image.png", "#00000000"); err != nil {
       fmt.Println(err)
   }
 
@@ -108,8 +114,6 @@ func main() {
 }
 
 ```
-
-
 
 ## LICENSE
 

@@ -20,7 +20,7 @@ var (
 	imageFilename   = flag.String("f", "", "Image file name")
 	tileSize        = flag.Int("s", 512, "The tile height/width")
 	output          = flag.String("o", "out/%d/%d-%d.jpg", "Output file pattern")
-	backgroundColor = flag.String("b", "#FFF", "The background color to be used for the tiles")
+	backgroundColor = flag.String("b", "#ffffff00", "The background color to be used for the tiles")
 )
 
 func main() {

@@ -3,6 +3,7 @@ package image2tiles
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"image/png"
@@ -58,23 +59,25 @@ func ImageToRGBA(src image.Image) *image.RGBA {
 	return dst
 }
 
-func ParseHexColor(x string) (r, g, b, a int) {
+func ParseHexColor(x string) color.RGBA {
 	x = strings.TrimPrefix(x, "#")
-	a = 255
+	c := color.RGBA{R: 255, G: 255, B: 255, A: 255}
+
 	if len(x) == 3 {
 		format := "%1x%1x%1x"
-		fmt.Sscanf(x, format, &r, &g, &b)
-		r |= r << 4
-		g |= g << 4
-		b |= b << 4
+		fmt.Sscanf(x, format, &c.R, &c.G, &c.B)
+		c.R |= c.R << 4
+		c.G |= c.G << 4
+		c.B |= c.B << 4
 	}
 	if len(x) == 6 {
 		format := "%02x%02x%02x"
-		fmt.Sscanf(x, format, &r, &g, &b)
+		fmt.Sscanf(x, format, &c.R, &c.G, &c.B)
 	}
 	if len(x) == 8 {
 		format := "%02x%02x%02x%02x"
-		fmt.Sscanf(x, format, &r, &g, &b, &a)
+		fmt.Sscanf(x, format, &c.R, &c.G, &c.B, &c.A)
 	}
-	return
+
+	return c
 }
