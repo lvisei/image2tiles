@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>openlayers</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css"
+      type="text/css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="text/javascript">
+      const source = new ol.source.Zoomify({
+        url: "tiles/{z}/{x}-{y}.png?",
+        size: [8192, 8192],
+        zDirection: -1, // Ensure we get a tile with the screen resolution or higher
+        tileSize: 512, // from a higher zoom level
+      });
+      const extent = source.getTileGrid().getExtent();
+
+      const layer = new ol.layer.Tile({
+        source: source,
+      });
+
+      const map = new ol.Map({
+        layers: [layer],
+        target: "map",
+        view: new ol.View({
+          // adjust zoom levels to those provided by the source
+          resolutions: layer.getSource().getTileGrid().getResolutions(),
+          // constrain the center: center cannot be set outside this extent
+          extent: extent,
+          constrainOnlyCenter: true,
+        }),
+      });
+
+      map.getView().fit(extent);
+    </script>
+  </body>
+</html>

@@ -9,6 +9,7 @@ import (
 	"math"
 	"os"
 	"path"
+	"strings"
 )
 
 var (
@@ -36,8 +37,8 @@ func (converter *Converter) Prepare(imageName string, bgColor string) error {
 		return errors.New("open newImage file failed: " + err.Error())
 	}
 
-	originalImageWidth := originalImage.Bounds().Size().X
-	originalImageHeight := originalImage.Bounds().Size().Y
+	originalImageWidth := originalImage.Bounds().Dx()
+	originalImageHeight := originalImage.Bounds().Dy()
 
 	imageWidth := 1
 	imageHeight := 1
@@ -47,10 +48,8 @@ func (converter *Converter) Prepare(imageName string, bgColor string) error {
 		imageHeight *= 2
 	}
 
-	r, g, b, a := ParseHexColor(bgColor)
-
-	newImage := imaging.New(imageWidth, imageHeight, color.NRGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a)})
-	originalImage = imaging.Thumbnail(originalImage, imageWidth, imageHeight, resampleFilter)
+	fillColor := ParseHexColor(bgColor)
+	newImage := imaging.New(imageWidth, imageHeight, fillColor)
 	newImage = imaging.Paste(newImage, originalImage, image.Pt((imageWidth-originalImageWidth)/2, (imageHeight-originalImageHeight)/2))
 
 	converter.Image = newImage
@@ -68,15 +67,22 @@ func (converter *Converter) Tile(level int, size [2]int, quadrant [2]int, effici
 
 	// crop out the area of interest first, then scale and copy it
 	if efficient {
-		inverseSize := [2]float64{float64(converter.ImageHeight) / float64(size[0]*scale), float64(converter.ImageHeight) / float64(size[1]*scale)}
-		topLeft := [2]int{int(float64(quadrant[0]) * float64(size[0]) * inverseSize[0]), int(float64(quadrant[1]) * float64(size[1]) * inverseSize[1])}
-		bottomRight := [2]int{topLeft[0] + int(float64(size[0])*inverseSize[0]), topLeft[1] + int(float64(size[1])*inverseSize[1])}
+		inverseSize := [2]float64{
+			float64(converter.ImageHeight) / float64(size[0]*scale),
+			float64(converter.ImageHeight) / float64(size[1]*scale),
+		}
+		topLeft := [2]int{
+			int(float64(quadrant[0]) * float64(size[0]) * inverseSize[0]),
+			int(float64(quadrant[1]) * float64(size[1]) * inverseSize[1]),
+		}
+		bottomRight := [2]int{
+			topLeft[0] + int(float64(size[0])*inverseSize[0]),
+			topLeft[1] + int(float64(size[1])*inverseSize[1]),
+		}
 
 		if inverseSize[0] < 1 || inverseSize[1] < 1 {
 			return nil, fmt.Errorf("requested zoom level (%d) is too high", level)
 		}
-
-		fmt.Printf(" crop %s resize %v \n", fmt.Sprintf("%v %v", topLeft, bottomRight), size)
 
 		zoomed := imaging.Crop(converter.Image, image.Rect(topLeft[0], topLeft[1], bottomRight[0], bottomRight[1]))
 		zoomed = imaging.Resize(zoomed, size[0], size[1], resampleFilter)
@@ -93,13 +99,32 @@ func (converter *Converter) Tile(level int, size [2]int, quadrant [2]int, effici
 		return nil, fmt.Errorf("requested zoom level (%d) is too high", level)
 	}
 
-	fmt.Printf("crop(%s).resize(%v)", fmt.Sprintf("%v %v", topLeft, bottomRight), newSize)
-
 	zoomed := imaging.Clone(converter.Image)
 	zoomed = imaging.Resize(zoomed, newSize[0], newSize[1], resampleFilter)
 	zoomed = imaging.Crop(zoomed, image.Rect(topLeft[0], topLeft[1], bottomRight[0], bottomRight[1]))
 
 	return zoomed, nil
+}
+
+// saveTile Save tile image
+func (converter *Converter) saveTile(img image.Image, level int, quadrant [2]int, imageQuality int, output string) (string, error) {
+	filePath := fmt.Sprintf(output, level, quadrant[0], quadrant[1])
+
+	if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
+		return filePath, fmt.Errorf("create output directory: %v", err)
+	}
+
+	if isPng := strings.ToLower(path.Ext(filePath)); isPng == ".png" {
+		if err := SavePNG(filePath, img); err != nil {
+			return filePath, err
+		}
+	} else {
+		if err := SaveJPG(filePath, img, imageQuality); err != nil {
+			return filePath, err
+		}
+	}
+
+	return filePath, nil
 }
 
 // subdivide Recursively subdivide a large image into small tiles
@@ -110,11 +135,8 @@ func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, e
 			return nil, err
 		}
 
-		filePath := fmt.Sprintf(output, level, quadrant[0], quadrant[1])
-		if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
-			return nil, fmt.Errorf("create output directory: %v", err)
-		}
-		if err := SaveJPG(filePath, outImg, imageQuality); err != nil {
+		filePath, err := converter.saveTile(outImg, level, quadrant, imageQuality, output)
+		if err != nil {
 			return nil, err
 		}
 
@@ -124,7 +146,7 @@ func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, e
 
 		converter.TileSize = size
 
-		fmt.Printf("level %d quadrant %v filePath %s", level, quadrant, filePath)
+		fmt.Printf("level %d quadrant %v filePath %s \n", level, quadrant, filePath)
 
 		return outImg, nil
 	}
@@ -158,13 +180,12 @@ func (converter *Converter) subdivide(level int, size [2]int, quadrant [2]int, e
 
 	outImg = imaging.Resize(outImg, size[0], size[1], resampleFilter)
 
-	filePath := fmt.Sprintf(output, level, quadrant[0], quadrant[1])
-	if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create output directory: %v", err)
-	}
-	if err := SaveJPG(filePath, outImg, imageQuality); err != nil {
+	filePath, err := converter.saveTile(outImg, level, quadrant, imageQuality, output)
+	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("level %d quadrant %v filePath %s \n", level, quadrant, filePath)
 
 	return outImg, nil
 }
