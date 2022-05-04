@@ -17,9 +17,9 @@ builds:
     - windows
     ldflags:
       - -s -w
-      - -X github.com/lvisei/image2tiles/cli.version={{.Version}}
-      - -X github.com/lvisei/image2tiles/cli.commit={{.ShortCommit}}
-      - -X github.com/lvisei/image2tiles/cli.date={{.Date}}
+      - -X github.com/lvisei/image2tiles/cmd/image2tiles/main.version={{.Version}}
+      - -X github.com/lvisei/image2tiles/cmd/image2tiles/main.commit={{.ShortCommit}}
+      - -X github.com/lvisei/image2tiles/cmd/image2tiles/main.date={{.Date}}
 
 archives:
   - replacements:
