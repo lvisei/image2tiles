@@ -8,7 +8,7 @@ import (
 
 func TestPrepare(t *testing.T) {
 	converter := image2tiles.NewConverter()
-	imageFilename := "testdata/earth_5568*3712.jpg"
+	imageFilename := "testdata/earth_5568_3712.jpg"
 
 	if err := converter.Prepare(imageFilename, "#fff"); err != nil {
 		t.Fatal("prepare", err)
@@ -17,7 +17,7 @@ func TestPrepare(t *testing.T) {
 
 func TestTile(t *testing.T) {
 	converter := image2tiles.NewConverter()
-	imageFilename := "testdata/earth_5568*3712.jpg"
+	imageFilename := "testdata/earth_5568_3712.jpg"
 
 	if err := converter.Prepare(imageFilename, "#00000000"); err != nil {
 		t.Fatal("prepare", err)
@@ -30,7 +30,7 @@ func TestTile(t *testing.T) {
 
 func TestExecute(t *testing.T) {
 	converter := image2tiles.NewConverter()
-	imageFilename := "testdata/earth_5568*3712.jpg"
+	imageFilename := "testdata/earth_5568_3712.jpg"
 
 	if err := converter.Prepare(imageFilename, "#00000000"); err != nil {
 		t.Fatal("prepare", err)
